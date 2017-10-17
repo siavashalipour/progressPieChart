@@ -7,51 +7,116 @@
 //
 
 import UIKit
+import SnapKit
 
 class ViewController: UIViewController {
 
-    let frame = CGRect(x: 150, y: 150, width: 400, height: 400)
-    var otherView = ACRCircleView(frame: CGRect(x: 40, y: 200, width: 300, height: 300))
-    let chart = MCPieChartView.init(frame: CGRect(x: 40, y: 200, width: 310, height: 310))
-
-    var animating = ACRCircleView(frame: CGRect(x: 200, y: 200, width: 100, height: 100))
     var timer : Timer?
     var time : Double = 0
+    let animatedChart = ACRCircleView()
+    lazy var middleCircle: UIView = {
+       let v = UIView()
+        v.backgroundColor = UIColor.white
+        v.layer.cornerRadius = 12
+        return v
+    }()
+    lazy var line1: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white
+        return v
+    }()
+    lazy var line2: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white
+        return v
+    }()
+    lazy var line3: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white
+        return v
+    }()
+    lazy var line4: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white
+        return v
+    }()
+    lazy var line5: UIView = {
+        let v = UIView()
+        v.backgroundColor = UIColor.white
+        return v
+    }()
+    private let kLineSize: CGSize = CGSize(width: 2, height: 100)
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        chart.delegate = self
-        chart.dataSource = self
-        chart.isUserInteractionEnabled = false
-        chart.tintColor = .clear
-        chart.borderColor = .clear
-//        chart.borderPercentage = 0.01
-        chart.animationEnabled = false
-        otherView.baseColor = #colorLiteral(red: 0.7475797534, green: 0.8137413859, blue: 0.9230439067, alpha: 1)
-        otherView.tintColor = #colorLiteral(red: 0, green: 1, blue: 0.009308487177, alpha: 0.5)
-        otherView.strokeWidth = otherView.bounds.width / 2
-        view.addSubview(otherView)
-        chart.selectedSliceColor = .blue
-        chart.allowsMultipleSelection = true
 
-        let middleCircle = UIView.init(frame: CGRect(x: 120, y: 120, width: 24, height: 24))
-        middleCircle.backgroundColor = .red
-        middleCircle.layer.cornerRadius = 12
         
-        
+        animatedChart.baseColor = #colorLiteral(red: 0.7475797534, green: 0.8137413859, blue: 0.9230439067, alpha: 1)
+        animatedChart.tintColor = #colorLiteral(red: 0, green: 1, blue: 0.009308487177, alpha: 0.5)
+        animatedChart.strokeWidth = 100
+        view.addSubview(animatedChart)
+        animatedChart.snp.makeConstraints { (make) in
+            make.center.equalToSuperview()
+            make.size.equalTo(CGSize(width: 200, height: 200))
+        }
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
 
+        view.addSubview(middleCircle)
+        middleCircle.snp.makeConstraints { (make) in
+            make.center.equalToSuperview()
+            make.size.equalTo(CGSize(width: 24, height: 24))
+        }
+        
+        view.addSubview(line1)
+        line1.snp.makeConstraints { (make) in
+            make.bottom.equalTo(middleCircle.snp.top)
+            make.size.equalTo(kLineSize)
+            make.centerX.equalTo(middleCircle)
+        }
+
+        line2.transform = CGAffineTransform(rotationAngle: CGFloat(Float(72).degreesToRadians))
+        view.addSubview(line2)
+        line2.snp.makeConstraints { (make) in
+            make.size.equalTo(kLineSize)
+            make.centerX.equalTo(middleCircle).offset(48)
+            make.centerY.equalTo(middleCircle).offset(-16)
+            
+        }
+        
+        line3.transform = CGAffineTransform(rotationAngle: CGFloat(Float(144).degreesToRadians))
+        view.addSubview(line3)
+        line3.snp.makeConstraints { (make) in
+            make.size.equalTo(kLineSize)
+            make.centerX.equalTo(middleCircle).offset(36)
+            make.centerY.equalTo(middleCircle).offset(48)
+            
+        }
+        line4.transform = CGAffineTransform(rotationAngle: CGFloat(Float(216).degreesToRadians))
+        view.addSubview(line4)
+        line4.snp.makeConstraints { (make) in
+            make.size.equalTo(kLineSize)
+            make.centerX.equalTo(middleCircle).offset(-30)
+            make.centerY.equalTo(middleCircle).offset(43)
+            
+        }
+        
+        line5.transform = CGAffineTransform(rotationAngle: CGFloat(Float(288).degreesToRadians))
+        view.addSubview(line5)
+        line5.snp.makeConstraints { (make) in
+            make.size.equalTo(kLineSize)
+            make.centerX.equalTo(middleCircle).offset(-48)
+            make.centerY.equalTo(middleCircle).offset(-18)
+            
+        }
     }
     @objc func update() {
         time = time + 0.1
         if time >= 1.0 {
-            otherView.progress = 1.0
-//            chart.selectItem(at: 5)
+            animatedChart.progress = 1.0
             timer?.invalidate()
         } else {
-            otherView.progress = CGFloat(time.truncatingRemainder(dividingBy: 1.0))
-            
-//            chart.selectItem(at: UInt((otherView.progress*3.0)))
+            animatedChart.progress = CGFloat(time.truncatingRemainder(dividingBy: 1.0))
         }
     }
     override func didReceiveMemoryWarning() {
@@ -60,21 +125,6 @@ class ViewController: UIViewController {
     }
 
 
-}
-extension ViewController: MCPieChartViewDelegate, MCPieChartViewDataSource {
-    func numberOfSlices(in pieChartView: MCPieChartView!) -> Int {
-        return 5
-    }
-    
-    func pieChartView(_ pieChartView: MCPieChartView!, valueForSliceAt index: Int) -> CGFloat {
-        return 10
-    }
-    func pieChartView(_ pieChartView: MCPieChartView!, textForSliceAt index: Int) -> String! {
-        return "YO"
-    }
-    func pieChartView(_ pieChartView: MCPieChartView!, didSelectSliceAt index: Int) {
-        
-    }
 }
 
 class ACRCircleView: UIView {
@@ -129,9 +179,9 @@ class ACRCircleView: UIView {
     }
     
     func startAnimating() {
-        var animation = CABasicAnimation(keyPath: "transform.rotation.z")
+        let animation = CABasicAnimation(keyPath: "transform.rotation.z")
         animation.fromValue = 0.0
-        animation.toValue = 2 * M_PI
+        animation.toValue = 2 * Double.pi
         // this might be too fast
         animation.duration = 1
         // HUGE_VALF is defined in math.h so import it
@@ -160,7 +210,7 @@ class ACRCircleView: UIView {
         // make optional for animated? See: http://stackoverflow.com/questions/21688363/change-cashapelayer-without-animation
         circlePathLayer.actions = ["strokeEnd": NSNull()]
         // rotate the layer negative 90deg to make it start at the top. 12 o'clock, default is 3 o'clock.
-        circlePathLayer.transform = CATransform3DMakeRotation(-CGFloat(90.0 / 180.0 * M_PI), 0.0, 0.0, 1.0)
+        circlePathLayer.transform = CATransform3DMakeRotation(-CGFloat(90.0 / 180.0 * Double.pi), 0.0, 0.0, 1.0)
         layer.addSublayer(circlePathLayer)
         
         progress = 0
@@ -187,4 +237,7 @@ class ACRCircleView: UIView {
         circlePathLayer.path = circlePath().cgPath
     }
 }
-
+extension FloatingPoint {
+    var degreesToRadians: Self { return self * .pi / 180 }
+    var radiansToDegrees: Self { return self * 180 / .pi }
+}
