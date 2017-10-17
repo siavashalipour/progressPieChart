@@ -45,8 +45,50 @@ class ViewController: UIViewController {
         v.backgroundColor = UIColor.white
         return v
     }()
-    private let kLineSize: CGSize = CGSize(width: 2, height: 100)
+    private let kLineSize: CGSize = CGSize(width: 2, height: 106)
 
+    lazy var orderPlaced: UILabel = {
+        let l = UILabel()
+        l.text = "Order placed".uppercased()
+        l.font = UIFont.systemFont(ofSize: 12)
+        l.numberOfLines = 2
+        l.textAlignment = .center
+        return l
+    }()
+    lazy var confirmOrder: UILabel = {
+        let l = UILabel()
+        l.text = "Confirm Order".uppercased()
+        l.font = UIFont.systemFont(ofSize: 12)
+        l.numberOfLines = 2
+        l.textAlignment = .center
+        return l
+    }()
+    lazy var makingOrder: UILabel = {
+        let l = UILabel()
+        l.text = "Making Order".uppercased()
+        l.font = UIFont.systemFont(ofSize: 12)
+        l.numberOfLines = 2
+        l.textAlignment = .center
+        return l
+    }()
+    lazy var readyForPickup: UILabel = {
+        let l = UILabel()
+        l.text = "Ready for pickup".uppercased()
+        l.font = UIFont.systemFont(ofSize: 12)
+        l.numberOfLines = 2
+        l.textAlignment = .center
+        return l
+    }()
+    lazy var orderComplete: UILabel = {
+        let l = UILabel()
+        l.text = "order Complete".uppercased()
+        l.font = UIFont.systemFont(ofSize: 12)
+        l.numberOfLines = 2
+        l.textAlignment = .center
+        return l
+    }()
+    private let labelSize: CGSize = CGSize(width: 68, height: 32)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -57,14 +99,20 @@ class ViewController: UIViewController {
         animatedChart.strokeWidth = 100
         view.addSubview(animatedChart)
         animatedChart.snp.makeConstraints { (make) in
-            make.center.equalToSuperview()
-            make.size.equalTo(CGSize(width: 200, height: 200))
+            make.centerX.equalToSuperview()
+            if #available(iOS 11, *) {
+                let guide = view.safeAreaLayoutGuide
+                make.top.equalTo(guide).offset(32)
+            } else {
+                make.top.equalTo(self.topLayoutGuide.snp.bottom).offset(32)
+            }
+            make.size.equalTo(CGSize(width: 212, height: 212))
         }
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
 
         view.addSubview(middleCircle)
         middleCircle.snp.makeConstraints { (make) in
-            make.center.equalToSuperview()
+            make.center.equalTo(animatedChart)
             make.size.equalTo(CGSize(width: 24, height: 24))
         }
         
@@ -74,7 +122,13 @@ class ViewController: UIViewController {
             make.size.equalTo(kLineSize)
             make.centerX.equalTo(middleCircle)
         }
-
+        view.addSubview(orderPlaced)
+        orderPlaced.snp.makeConstraints { (make) in
+            make.size.equalTo(labelSize)
+            make.left.equalTo(line1.snp.right).offset(4)
+            make.bottom.equalTo(middleCircle.snp.top).offset(-26)
+        }
+        
         line2.transform = CGAffineTransform(rotationAngle: CGFloat(Float(72).degreesToRadians))
         view.addSubview(line2)
         line2.snp.makeConstraints { (make) in
@@ -82,6 +136,12 @@ class ViewController: UIViewController {
             make.centerX.equalTo(middleCircle).offset(48)
             make.centerY.equalTo(middleCircle).offset(-16)
             
+        }
+        view.addSubview(confirmOrder)
+        confirmOrder.snp.makeConstraints { (make) in
+            make.size.equalTo(labelSize)
+            make.left.equalTo(middleCircle.snp.right).offset(15)
+            make.centerY.equalTo(middleCircle).offset(14)
         }
         
         line3.transform = CGAffineTransform(rotationAngle: CGFloat(Float(144).degreesToRadians))
@@ -92,6 +152,13 @@ class ViewController: UIViewController {
             make.centerY.equalTo(middleCircle).offset(48)
             
         }
+        view.addSubview(makingOrder)
+        makingOrder.snp.makeConstraints { (make) in
+            make.size.equalTo(labelSize)
+            make.centerX.equalTo(middleCircle)
+            make.top.equalTo(middleCircle.snp.bottom).offset(30)
+        }
+        
         line4.transform = CGAffineTransform(rotationAngle: CGFloat(Float(216).degreesToRadians))
         view.addSubview(line4)
         line4.snp.makeConstraints { (make) in
@@ -100,6 +167,13 @@ class ViewController: UIViewController {
             make.centerY.equalTo(middleCircle).offset(43)
             
         }
+        view.addSubview(readyForPickup)
+        readyForPickup.snp.makeConstraints { (make) in
+            make.size.equalTo(labelSize)
+            make.centerY.equalTo(middleCircle).offset(12)
+            make.right.equalTo(middleCircle.snp.left).offset(-18)
+        }
+        
         
         line5.transform = CGAffineTransform(rotationAngle: CGFloat(Float(288).degreesToRadians))
         view.addSubview(line5)
@@ -108,6 +182,12 @@ class ViewController: UIViewController {
             make.centerX.equalTo(middleCircle).offset(-48)
             make.centerY.equalTo(middleCircle).offset(-18)
             
+        }
+        view.addSubview(orderComplete)
+        orderComplete.snp.makeConstraints { (make) in
+            make.size.equalTo(labelSize)
+            make.right.equalTo(line1.snp.left).offset(-4)
+            make.bottom.equalTo(middleCircle.snp.top).offset(-26)
         }
     }
     @objc func update() {
